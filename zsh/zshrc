@@ -1,0 +1,35 @@
+# --- Prompt ---
+eval "$(starship init zsh)"
+
+# --- Directory jumping ---
+eval "$(zoxide init zsh)"
+
+# --- fzf integration ---
+# Keybindings & completion
+if [[ -r /usr/share/fzf/key-bindings.zsh ]]; then
+  source /usr/share/fzf/key-bindings.zsh
+fi
+if [[ -r /usr/share/fzf/completion.zsh ]]; then
+  source /usr/share/fzf/completion.zsh
+fi
+
+# Use fd for fzf listings
+export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude .git'
+
+# fzf previews
+export FZF_CTRL_T_OPTS="--preview 'bat --style=numbers --color=always --line-range :300 {}' --preview-window=right,60%"
+export FZF_ALT_C_OPTS="--preview 'ls -la --color=always {} | head -200' --preview-window=right,60%"
+
+# Kill processes with fzf
+fkill() {
+  local pid
+  pid=$(ps -u "$USER" -o pid,comm,%cpu,%mem --sort=-%cpu | sed 1d | fzf --prompt='kill> ' | awk '{print $1}') || return
+  kill -9 "$pid"
+}
+
+# Fuzzy jump into a subdirectory of the current dir
+cdf() {
+  local dir
+  dir=$(fd --type d --hidden --follow --exclude .git . "${1:-.}" | fzf --prompt='cd> ' --preview 'ls -la --color=always {} | head -200') || return
+  cd "$dir"
+}
