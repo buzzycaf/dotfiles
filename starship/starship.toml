@@ -1,0 +1,18 @@
+add_newline = false
+
+format = "$directory$git_branch$git_status$character"
+
+[directory]
+style = "blue"
+truncate_to_repo = false
+
+[git_branch]
+symbol = " "
+style = "purple"
+
+[git_status]
+style = "yellow"
+
+[character]
+success_symbol = "[❯](green)"
+error_symbol = "[❯](red)"
