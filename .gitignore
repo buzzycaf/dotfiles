@@ -1,0 +1,16 @@
+# Editor swap/backup files
+*.swp
+*.swo
+*.bak
+*~
+
+# macOS junk (in case you ever edit there)
+.DS_Store
+
+# Temporary files
+.cache/
+tmp/
+
+# Secrets (just in case)
+secrets*
+private*
