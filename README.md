@@ -37,3 +37,9 @@ cd ~/src
 git clone https://github.com/buzzycaf/archbento
 cd archbento
 ./install.sh
+```
+After installation, switch to zsh:
+```bash
+chsh -s /bin/zsh
+```
+Log out and log back in (or reboot).
