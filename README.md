@@ -1,25 +1,39 @@
 # Archbento 🍱
-A curated, intentional Arch Linux setup — inspired by Omarchy.
 
-No secrets in this repo
+**Archbento** is an opinionated, minimal Arch Linux bootstrap focused on a clean,
+comfortable **TTY / console-first** workflow.
 
-Machine-specific configs belong elsewhere
+It provides a reproducible baseline with:
+- zsh + starship (TTY-safe, no Nerd Fonts required)
+- fzf + zoxide
+- fastfetch
+- a small, intentional CLI toolset
+- yay included by default
+- an idempotent install script that can be safely re-run
 
-#### Installation (Fresh Arch Linux)
-1. After a fresh Arch Install
-   ```bash
-   sudo pacman -S git
-   mkdir -p ~/git_repositories
-   cd ~/git_repositories
-   git clone https://github.com/buzzycaf/archbento
-   cd dotfiles
-   chmod +x install.sh
-   ./install.sh
-   ```
-2. Enable the new shell
-   ```bash
-   chsh -s /bin/zsh
-   ```
-3. Log off and back in again, or reboot.
+Archbento is designed to be a **foundation**, not a full desktop.
+Machine-specific configuration and higher-level environments belong elsewhere.
 
-This repository is private and intended for personal use.
+---
+
+## Philosophy
+
+- Console-first, GUI-agnostic
+- Minimal, but not bare
+- Observability over decoration
+- Reproducible from a fresh Arch install
+- `main` is living, tagged releases are frozen history
+
+---
+
+## Installation (Fresh Arch Linux)
+
+From a freshly installed Arch system (TTY):
+
+```bash
+sudo pacman -S git
+mkdir -p ~/src
+cd ~/src
+git clone https://github.com/buzzycaf/archbento
+cd archbento
+./install.sh
