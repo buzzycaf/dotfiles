@@ -1,18 +1,38 @@
-add_newline = false
+add_newline = true
 
-format = "$directory$git_branch$git_status$character"
+# Left prompt: blocks on line 1, prompt char on line 2
+format = """
+$directory$git_branch$git_status
+$character"""
+
+# Right prompt: user@host block
+right_format = """
+$custom.userhost"""
+
+# ---------- Blocks (left) ----------
 
 [directory]
-style = "blue"
+style = "black bold bg:blue"
+format = "[$path]($style)"
 truncate_to_repo = false
 
 [git_branch]
 symbol = " "
-style = "purple"
+style = "black bold bg:magenta"
+format = "[$symbol$branch]($style)"
 
 [git_status]
-style = "yellow"
+style = "black bold bg:yellow"
+format = "[$all_status$ahead_behind]($style)"
 
+# Prompt character on its own line
 [character]
-success_symbol = "[❯](green)"
-error_symbol = "[❯](red)"
+success_symbol = "[❯](bold green) "
+error_symbol = "[❯](bold red) "
+
+# ---------- Right side block: username@hostname ----------
+
+[custom.userhost]
+# Always show. If you only want this on SSH later, I’ll adjust.
+when = "true"
+format = "[ $USER@$HOSTNAME ](black bold bg:cyan)"
