@@ -6,7 +6,7 @@ $character"""
 
 right_format = "$username$hostname"
 
-# ---------- Left side (blue tones) ----------
+# ---------- Left side blocks ----------
 
 [directory]
 style = "black bold bg:blue"
@@ -22,17 +22,17 @@ format = "[ $branch ]($style)"
 style = "black bg:cyan"
 format = "[ $all_status$ahead_behind ]($style)"
 
-# Prompt character
+# Prompt character (keep simple and readable)
 [character]
 success_symbol = "[>](bold blue) "
 error_symbol = "[>](bold red) "
 
-# ---------- Right side (blue tone capsule) ----------
+# ---------- Right side block ----------
 
 [username]
 show_always = true
 style_user = "black bold bg:cyan"
-style_root = "white bold bg:blue"
+style_root = "black bold bg:blue"
 format = "[ $user]($style_user)"
 
 [hostname]
