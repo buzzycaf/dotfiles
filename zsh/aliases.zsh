@@ -6,6 +6,7 @@ alias cls='clear'
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
+alias ll='ls -lah'
 
 # Navigation
 alias ..='cd ..'

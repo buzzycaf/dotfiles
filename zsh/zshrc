@@ -1,6 +1,13 @@
 # Only run interactive config in interactive shells
 [[ -o interactive ]] || return
 
+# --- Aliases ---
+if [[ -f "$HOME/.zsh/aliases.zsh" ]]; then
+  source "$HOME/.zsh/aliases.zsh"
+else
+  echo "WARN: aliases.zsh not found at $HOME/.zsh/aliases.zsh" >&2
+fi
+
 # --- Prompt ---
 eval "$(starship init zsh)"
 
@@ -44,9 +51,6 @@ bindkey '\e[6~' down-line-or-history
 bindkey '\e[5;5~' up-line-or-history
 bindkey '\e[6;5~' down-line-or-history
 bindkey '^[[3~' delete-char
-
-# --- Aliases ---
-[[ -f "$HOME/.zsh/aliases.zsh" ]] && source "$HOME/.zsh/aliases.zsh"
 
 # --- Helpers ---
 fkill() {

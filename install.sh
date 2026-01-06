@@ -72,7 +72,7 @@ link_file() {
 
   backup_if_exists "$dst"
   run "mkdir -p '$(dirname "$dst")'"
-  run "ln -s '$src' '$dst'"
+  run "ln -sf '$src' '$dst'"
   log "Linked: $dst -> $src"
 }
 
@@ -94,6 +94,16 @@ link_dir_contents() {
 # Main tasks
 # -----------------------------
 
+warm_sudo() {
+  [[ "$DRY_RUN" == "1" ]] && return
+  log "Caching sudo credentials..."
+  sudo -v
+  # keep-alive: refresh every 60s until script exits
+  while true; do sudo -n -v; sleep 60; done 2>/dev/null &
+  SUDO_KEEPALIVE_PID=$!
+  trap 'kill $SUDO_KEEPALIVE_PID 2>/dev/null || true' EXIT
+}
+
 install_packages() {
   [[ "$NO_PACKAGES" == "1" ]] && {
     log "Skipping package installation (--no-packages)"
@@ -104,16 +114,40 @@ install_packages() {
   local pkgs=(
     neovim less man-db man-pages
     base-devel curl wget ripgrep fd unzip zip tar
-    tree bat which
+    tree bat which dnsutils
     htop lsof pciutils usbutils
     networkmanager iperf3
-    gnupg openssh nano
+    gnupg openssh nano rsync ethtool
     dosfstools e2fsprogs ntfs-3g
     fzf zoxide zsh starship fastfetch
   )
 
   log "Installing foundation packages (excluding git)..."
   run "sudo pacman -S --needed --noconfirm ${pkgs[*]}"
+}
+
+install_yay() {
+  [[ "$NO_PACKAGES" == "1" ]] && {
+    log "Skipping yay install (--no-packages)"
+    return
+  }
+
+  if command -v yay >/dev/null 2>&1; then
+    log "yay already installed"
+    return
+  fi
+
+  need_cmd git
+
+  log "Installing yay (AUR helper)..."
+
+  run "sudo pacman -S --needed --noconfirm base-devel git"
+  need_cmd makepkg
+
+  local yay_dir
+  yay_dir="$(mktemp -d /tmp/yay.XXXXXX)"
+  run "git clone https://aur.archlinux.org/yay.git '$yay_dir'"
+  run "cd '$yay_dir' && makepkg -si --noconfirm --needed"
 }
 
 enable_networking() {
@@ -218,8 +252,13 @@ main() {
   need_cmd date
   need_cmd readlink
 
+  if [[ "$NO_PACKAGES" != "1" ]]; then
+    warm_sudo
+  fi
+
   install_packages
   enable_networking
+  install_yay
   link_dotfiles
   set_zsh_shell
 
