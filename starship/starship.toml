@@ -1,46 +1,28 @@
 add_newline = true
 
-# Segment bar on line 1, prompt on line 2
 format = """
 $directory$git_branch$git_status
 $character"""
 
-# Right side segment (time)
-right_format = "$time"
-
-# -----------------
-# Left segments
-# -----------------
+# -------- Left info --------
 
 [directory]
-style = "black bold bg:blue"
-format = "[ $path ]($style) "
+style = "green"
+format = "$path "
+
 truncate_to_repo = false
 
 [git_branch]
-style = "black bold bg:green"
 symbol = ""
-format = "[ on $branch ]($style) "
+style = "green"
+format = "[on $branch] "
 
-# Keep status in the same green "band"
 [git_status]
-style = "black bold bg:green"
-format = "[ $all_status$ahead_behind ]($style) "
+style = "green"
+format = "[$all_status$ahead_behind] "
 
-# -----------------
-# Right segment
-# -----------------
-
-[time]
-disabled = false
-time_format = "%I:%M:%S %p"
-style = "black bold bg:bright-black"
-format = "[ at $time ]($style)"
-
-# -----------------
-# Prompt char (line 2)
-# -----------------
+# -------- Prompt char --------
 
 [character]
-success_symbol = "[>](bold blue) "
+success_symbol = "[>](bold green) "
 error_symbol = "[>](bold red) "
