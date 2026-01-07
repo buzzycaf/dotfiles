@@ -19,6 +19,7 @@ BACKUP_DIR="${HOME}/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 NO_PACKAGES=0
 DRY_RUN=0
 INCLUDE_GUI=0
+INCLUDE_GUI_TOOLS=0
 
 # -----------------------------
 # Helper functions
@@ -164,6 +165,7 @@ Usage: ./install.sh [OPTIONS]
 Options:
   --no-packages    Skip pacman package installation and service enablement
   --dry-run        Print actions without making any changes
+  --gui-tools   Install optional desktop tools (file manager, launcher, etc.)
   -h, --help       Show this help message
   --gui            Install Hyprland GUI stack (desktop packages)
 
@@ -185,6 +187,7 @@ parse_args() {
       --no-packages) NO_PACKAGES=1 ;;
       --dry-run)     DRY_RUN=1 ;;
       --gui) INCLUDE_GUI=1 ;;
+      --gui-tools) INCLUDE_GUI_TOOLS=1 ;;
       -h|--help)     usage; exit 0 ;;
       *)
         echo "Unknown option: $arg"
@@ -232,6 +235,7 @@ main() {
   if [[ "$INCLUDE_GUI" == "1" ]]; then
     gui_install_packages
     gui_enable_services
+    [[ "$INCLUDE_GUI_TOOLS" == "1" ]] && gui_install_tools
     gui_notes
   fi
 

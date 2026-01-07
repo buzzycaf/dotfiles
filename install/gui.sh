@@ -9,7 +9,7 @@ gui_install_packages() {
   # This is a conservative starter set that boots cleanly.
   local pkgs=(
     hyprland
-    hyprpaper
+    swww
     waybar
     ghostty
 
@@ -34,6 +34,21 @@ gui_install_packages() {
   )
 
   log "Installing GUI packages (Hyprland stack)..."
+  run "sudo pacman -S --needed --noconfirm ${pkgs[*]}"
+}
+
+gui_install_tools() {
+  [[ "$NO_PACKAGES" == "1" ]] && { log "Skipping GUI tools (--no-packages)"; return; }
+
+  # Optional desktop tools (QOL). Keep this tight.
+  local pkgs=(
+    # File manager
+    thunar
+    thunar-archive-plugin
+    xarchiver
+  )
+
+  log "Installing GUI tools (file manager, launcher, utilities)..."
   run "sudo pacman -S --needed --noconfirm ${pkgs[*]}"
 }
 

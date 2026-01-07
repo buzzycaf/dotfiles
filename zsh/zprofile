@@ -5,7 +5,9 @@
 if [[ -z "${WAYLAND_DISPLAY:-}" && -z "${DISPLAY:-}" ]]; then
   if [[ -z "${SSH_CONNECTION:-}" && -z "${SSH_TTY:-}" ]]; then
     if [[ "$(tty)" == "/dev/tty1" ]]; then
-      if command -v Hyprland >/dev/null 2>&1; then
+      if command -v start-hyprland >/dev/null 2>&1; then
+        exec start-hyprland
+      elif command -v Hyprland >/dev/null 2>&1; then
         exec Hyprland
       else
         echo "Hyprland not installed yet. Skipping autostart."
@@ -13,4 +15,3 @@ if [[ -z "${WAYLAND_DISPLAY:-}" && -z "${DISPLAY:-}" ]]; then
     fi
   fi
 fi
-
