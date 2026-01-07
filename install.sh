@@ -112,7 +112,7 @@ install_packages() {
 
   # git intentionally excluded (needed to clone this repo)
   local pkgs=(
-    micro less man-db man-pages
+    micro less man-db man-pages wl-clipboard
     base-devel curl wget ripgrep fd unzip zip tar
     tree bat which dnsutils
     htop lsof pciutils usbutils
@@ -120,7 +120,6 @@ install_packages() {
     gnupg openssh rsync ethtool
     dosfstools e2fsprogs ntfs-3g
     fzf zoxide zsh starship fastfetch
-    wl-clipboard
   )
 
   log "Installing foundation packages (excluding git)..."

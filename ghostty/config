@@ -1,1 +1,51 @@
+# Archbento Ghostty base config
+# TTY-safe defaults, Wayland-ready
 
+# Font
+font-family = monospace
+font-size = 11
+
+# Cursor
+cursor-style = block
+cursor-blink = true
+
+# Scrollback
+scrollback-limit = 100000
+
+# Clipboard
+clipboard = system
+
+# Bell
+bell = none
+
+# Window
+window-padding-x = 8
+window-padding-y = 8
+window-decoration = false
+
+# Theme
+background = 0x0b0f14
+foreground = 0xcdd6f4
+
+# ANSI colors (subtle, readable)
+color0  = 0x1e1e2e
+color1  = 0xf38ba8
+color2  = 0xa6e3a1
+color3  = 0xf9e2af
+color4  = 0x89b4fa
+color5  = 0xf5c2e7
+color6  = 0x94e2d5
+color7  = 0xbac2de
+
+color8  = 0x585b70
+color9  = 0xf38ba8
+color10 = 0xa6e3a1
+color11 = 0xf9e2af
+color12 = 0x89b4fa
+color13 = 0xf5c2e7
+color14 = 0x94e2d5
+color15 = 0xa6adc8
+
+# Disable terminal shortcuts that conflict with shells
+keybind = ctrl+shift+c=copy
+keybind = ctrl+shift+v=paste

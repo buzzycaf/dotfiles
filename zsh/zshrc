@@ -23,6 +23,10 @@ if [[ -r /usr/share/fzf/completion.zsh ]]; then
   source /usr/share/fzf/completion.zsh
 fi
 
+# --- Micro main editor ---
+export EDITOR=micro
+export VISUAL=micro
+
 # Use fd for fzf listings
 export FZF_DEFAULT_COMMAND='fd --hidden --follow --exclude .git'
 
