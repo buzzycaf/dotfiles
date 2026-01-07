@@ -18,6 +18,7 @@ BACKUP_DIR="${HOME}/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 NO_PACKAGES=0
 DRY_RUN=0
+INCLUDE_GUI=0
 
 # -----------------------------
 # Helper functions
@@ -104,62 +105,6 @@ warm_sudo() {
   trap 'kill $SUDO_KEEPALIVE_PID 2>/dev/null || true' EXIT
 }
 
-install_packages() {
-  [[ "$NO_PACKAGES" == "1" ]] && {
-    log "Skipping package installation (--no-packages)"
-    return
-  }
-
-  # git intentionally excluded (needed to clone this repo)
-  local pkgs=(
-    micro less man-db man-pages wl-clipboard
-    base-devel curl wget ripgrep fd unzip zip tar
-    tree bat which dnsutils
-    htop lsof pciutils usbutils
-    networkmanager iperf3 tmux
-    gnupg openssh rsync ethtool
-    dosfstools e2fsprogs ntfs-3g
-    fzf zoxide zsh starship fastfetch
-  )
-
-  log "Installing foundation packages (excluding git)..."
-  run "sudo pacman -S --needed --noconfirm ${pkgs[*]}"
-}
-
-install_yay() {
-  [[ "$NO_PACKAGES" == "1" ]] && {
-    log "Skipping yay install (--no-packages)"
-    return
-  }
-
-  if command -v yay >/dev/null 2>&1; then
-    log "yay already installed"
-    return
-  fi
-
-  need_cmd git
-
-  log "Installing yay (AUR helper)..."
-
-  run "sudo pacman -S --needed --noconfirm base-devel git"
-  need_cmd makepkg
-
-  local yay_dir
-  yay_dir="$(mktemp -d /tmp/yay.XXXXXX)"
-  run "git clone https://aur.archlinux.org/yay.git '$yay_dir'"
-  run "cd '$yay_dir' && makepkg -si --noconfirm --needed"
-}
-
-enable_networking() {
-  [[ "$NO_PACKAGES" == "1" ]] && {
-    log "Skipping NetworkManager enable (--no-packages)"
-    return
-  }
-
-  log "Enabling NetworkManager..."
-  run "sudo systemctl enable --now NetworkManager"
-}
-
 link_dotfiles() {
   log "Linking dotfiles from $REPO_DIR"
 
@@ -220,6 +165,7 @@ Options:
   --no-packages    Skip pacman package installation and service enablement
   --dry-run        Print actions without making any changes
   -h, --help       Show this help message
+  --gui            Install Hyprland GUI stack (desktop packages)
 
 Environment variables:
   DOTFILES_SET_SHELL=1
@@ -238,6 +184,7 @@ parse_args() {
     case "$arg" in
       --no-packages) NO_PACKAGES=1 ;;
       --dry-run)     DRY_RUN=1 ;;
+      --gui) INCLUDE_GUI=1 ;;
       -h|--help)     usage; exit 0 ;;
       *)
         echo "Unknown option: $arg"
@@ -248,12 +195,23 @@ parse_args() {
   done
 }
 
+source_module() {
+  local module="$1"
+  local path="$REPO_DIR/install/$module"
+  [[ -f "$path" ]] || { echo "ERROR: missing module: $path" >&2; exit 1; }
+  # shellcheck source=/dev/null
+  source "$path"
+}
+
 # -----------------------------
 # Entry point
 # -----------------------------
 
 main() {
   parse_args "$@"
+
+  source_module "core.sh"
+  source_module "gui.sh"
 
   need_cmd pacman
   need_cmd ln
@@ -266,9 +224,18 @@ main() {
     warm_sudo
   fi
 
-  install_packages
-  enable_networking
-  install_yay
+  # Core system install
+  core_install_packages
+  core_enable_networking
+  core_install_yay
+
+  # Optional GUI install
+  if [[ "$INCLUDE_GUI" == "1" ]]; then
+    gui_install_packages
+    gui_enable_services
+    gui_notes
+  fi
+
   link_dotfiles
   set_zsh_shell
 
