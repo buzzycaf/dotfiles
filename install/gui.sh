@@ -12,7 +12,7 @@ gui_install_packages() {
     swww
     waybar
     ghostty
-    
+    swayimg    
     # Clipboard + screenshots
     wl-clipboard
     grim slurp wev
