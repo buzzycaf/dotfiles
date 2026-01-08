@@ -8,7 +8,19 @@ else
   echo "WARN: aliases.zsh not found at $HOME/.zsh/aliases.zsh" >&2
 fi
 
-# --- Prompt ---
+# Prompt
+case "$TERM" in
+  xterm-256color|tmux-256color|screen-256color|xterm-ghostty|xterm-kitty)
+    export STARSHIP_CONFIG="$HOME/.config/starship/starship-xterm.toml"
+    ;;
+  linux)
+    export STARSHIP_CONFIG="$HOME/.config/starship/starship-linux.toml"
+    ;;
+  *)
+    export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+    ;;
+esac
+
 eval "$(starship init zsh)"
 
 # --- Directory jumping ---
