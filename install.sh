@@ -157,7 +157,7 @@ link_dotfiles() {
   fi
 
   # zsh extra files
-  run "mkdir -p '$HOME/.zsh'"
+  run "mkdir -p '$target_home/.zsh'"
   [[ -f "$REPO_DIR/zsh/aliases.zsh" ]] && link_file "$REPO_DIR/zsh/aliases.zsh" "$target_home/.zsh/aliases.zsh"
 
   [[ -d "$REPO_DIR/hypr"    ]] && link_dir_contents "$REPO_DIR/hypr"    "$target_home/.config/hypr"
