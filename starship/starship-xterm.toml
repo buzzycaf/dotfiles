@@ -31,11 +31,11 @@ $character
 """
 
 right_format = """
-[]\
+[](fg:lavender)\
 $username\
 $hostname\
 $cmd_duration\
-[]
+[](fg:lavender)
 """
 
 [hostname]
