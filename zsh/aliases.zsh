@@ -28,3 +28,6 @@ alias t='tmux'
 alias ta='tmux attach -t'
 alias tl='tmux ls'
 alias tn='tmux new -s'
+
+# View image
+alias img='setsid swayimg >/dev/null 2>&1 &'
