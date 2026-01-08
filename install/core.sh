@@ -58,7 +58,7 @@ core_enable_vt_switching() {
   # Honor flags
   [[ "$NO_PACKAGES" == "1" ]] && { log "Skipping VT switching setup (--no-packages)"; return; }
 
-  local user="${1:-${SUDO_USER:-}}"
+  local user="${1:-${SUDO_USER:-$USER}}"
   local group="vt-switch"
   local chvt_bin="/usr/bin/chvt"
   local sudoers_file="/etc/sudoers.d/archbento-chvt"

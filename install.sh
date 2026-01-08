@@ -13,6 +13,11 @@ set -euo pipefail
 # Safe to re-run. Supports dry runs and partial execution.
 # ------------------------------------------------------------
 
+if [[ "${EUID:-$(id -u)}" -eq 0 ]]; then
+  echo "ERROR: Do not run Archbento installer as root. Run: ./install.sh" >&2
+  exit 1
+fi
+
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BACKUP_DIR="${HOME}/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
@@ -109,50 +114,55 @@ warm_sudo() {
 link_dotfiles() {
   log "Linking dotfiles from $REPO_DIR"
 
+  # Find target user
+  local target_user="${SUDO_USER:-$USER}"
+  local target_home
+  target_home="$(getent passwd "$target_user" | cut -d: -f6)"
+
   # zsh
-  [[ -f "$REPO_DIR/zsh/zshrc" ]]     && link_file "$REPO_DIR/zsh/zshrc" "$HOME/.zshrc"
-  [[ -f "$REPO_DIR/zsh/zprofile" ]]  && link_file "$REPO_DIR/zsh/zprofile" "$HOME/.zprofile"
+  [[ -f "$REPO_DIR/zsh/zshrc" ]]     && link_file "$REPO_DIR/zsh/zshrc" "$target_home/.zshrc"
+  [[ -f "$REPO_DIR/zsh/zprofile" ]]  && link_file "$REPO_DIR/zsh/zprofile" "$target_home/.zprofile"
 
   # starship
   if [[ -d "$REPO_DIR/starship" ]]; then
-    run "mkdir -p '$HOME/.config/starship'"
+    run "mkdir -p '$target_home/.config/starship'"
 
     [[ -f "$REPO_DIR/starship/starship.toml" ]] && \
-      link_file "$REPO_DIR/starship/starship.toml" "$HOME/.config/starship/starship.toml"
+      link_file "$REPO_DIR/starship/starship.toml" "$target_home/.config/starship/starship.toml"
 
     [[ -f "$REPO_DIR/starship/starship-linux.toml" ]] && \
-      link_file "$REPO_DIR/starship/starship-linux.toml" "$HOME/.config/starship/starship-linux.toml"
+      link_file "$REPO_DIR/starship/starship-linux.toml" "$target_home/.config/starship/starship-linux.toml"
 
     [[ -f "$REPO_DIR/starship/starship-xterm.toml" ]] && \
-      link_file "$REPO_DIR/starship/starship-xterm.toml" "$HOME/.config/starship/starship-xterm.toml"
+      link_file "$REPO_DIR/starship/starship-xterm.toml" "$target_home/.config/starship/starship-xterm.toml"
 
     # Optional: legacy path compatibility (safe to keep)
     [[ -f "$REPO_DIR/starship/starship.toml" ]] && \
-      link_file "$REPO_DIR/starship/starship.toml" "$HOME/.config/starship.toml"
+      link_file "$REPO_DIR/starship/starship.toml" "$target_home/.config/starship.toml"
   fi
 
   # fastfetch
   if [[ -f "$REPO_DIR/fastfetch/config.jsonc" ]]; then
-    link_file "$REPO_DIR/fastfetch/config.jsonc" "$HOME/.config/fastfetch/config.jsonc"
+    link_file "$REPO_DIR/fastfetch/config.jsonc" "$target_home/.config/fastfetch/config.jsonc"
   fi
 
   # micro editor
   if [[ -d "$REPO_DIR/micro" ]]; then
-    link_dir_contents "$REPO_DIR/micro" "$HOME/.config/micro"
+    link_dir_contents "$REPO_DIR/micro" "$target_home/.config/micro"
   fi
 
   # tmux
   if [[ -f "$REPO_DIR/tmux/tmux.conf" ]]; then
-    link_file "$REPO_DIR/tmux/tmux.conf" "$HOME/.config/tmux/tmux.conf"
+    link_file "$REPO_DIR/tmux/tmux.conf" "$target_home/.config/tmux/tmux.conf"
   fi
 
   # zsh extra files
   run "mkdir -p '$HOME/.zsh'"
-  [[ -f "$REPO_DIR/zsh/aliases.zsh" ]] && link_file "$REPO_DIR/zsh/aliases.zsh" "$HOME/.zsh/aliases.zsh"
+  [[ -f "$REPO_DIR/zsh/aliases.zsh" ]] && link_file "$REPO_DIR/zsh/aliases.zsh" "$target_home/.zsh/aliases.zsh"
 
-  [[ -d "$REPO_DIR/hypr"    ]] && link_dir_contents "$REPO_DIR/hypr"    "$HOME/.config/hypr"
-  [[ -d "$REPO_DIR/waybar"  ]] && link_dir_contents "$REPO_DIR/waybar"  "$HOME/.config/waybar"
-  [[ -d "$REPO_DIR/ghostty" ]] && link_dir_contents "$REPO_DIR/ghostty" "$HOME/.config/ghostty"
+  [[ -d "$REPO_DIR/hypr"    ]] && link_dir_contents "$REPO_DIR/hypr"    "$target_home/.config/hypr"
+  [[ -d "$REPO_DIR/waybar"  ]] && link_dir_contents "$REPO_DIR/waybar"  "$target_home/.config/waybar"
+  [[ -d "$REPO_DIR/ghostty" ]] && link_dir_contents "$REPO_DIR/ghostty" "$target_home/.config/ghostty"
 
   [[ -d "$BACKUP_DIR" ]] && log "Backups saved in: $BACKUP_DIR"
 }
