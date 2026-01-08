@@ -50,3 +50,72 @@ core_install_yay() {
   run "git clone https://aur.archlinux.org/yay.git '$yay_dir'"
   run "cd '$yay_dir' && makepkg -si --noconfirm --needed"
 }
+
+core_enable_vt_switching() {
+  # Enables passwordless VT switching via `sudo chvt` for a dedicated group.
+  # Intended for Wayland compositors (Hyprland) where Ctrl+Alt+Fn VT switching may not work.
+
+  # Honor flags
+  [[ "$NO_PACKAGES" == "1" ]] && { log "Skipping VT switching setup (--no-packages)"; return; }
+
+  local user="${1:-${SUDO_USER:-}}"
+  local group="vt-switch"
+  local chvt_bin="/usr/bin/chvt"
+  local sudoers_file="/etc/sudoers.d/archbento-chvt"
+
+  if [[ -z "$user" ]]; then
+    log "ERROR: core_enable_vt_switching: no user provided and SUDO_USER is empty"
+    return 1
+  fi
+
+  if ! id -u "$user" >/dev/null 2>&1; then
+    log "ERROR: core_enable_vt_switching: user '$user' does not exist"
+    return 1
+  fi
+
+  if [[ ! -x "$chvt_bin" ]]; then
+    log "ERROR: core_enable_vt_switching: '$chvt_bin' not found/executable (is 'kbd' installed?)"
+    return 1
+  fi
+
+  need_cmd sudo
+
+  # Create group if missing
+  if ! getent group "$group" >/dev/null 2>&1; then
+    log "Creating group '$group'..."
+    run "sudo groupadd -r '$group'"
+  else
+    log "Group '$group' already exists"
+  fi
+
+  # Add user to group if needed
+  if ! id -nG "$user" | tr ' ' '\n' | grep -qx "$group"; then
+    log "Adding user '$user' to group '$group'..."
+    run "sudo usermod -aG '$group' '$user'"
+  else
+    log "User '$user' already in group '$group'"
+  fi
+
+  # Install sudoers drop-in (atomic write)
+  log "Installing sudoers rule '$sudoers_file'..."
+  run "sudo sh -c 'umask 077; tmp=\$(mktemp); cat >\"\$tmp\" <<EOF
+%${group} ALL=(root) NOPASSWD: ${chvt_bin}
+EOF
+chown root:root \"\$tmp\"
+chmod 0440 \"\$tmp\"
+mv -f \"\$tmp\" \"${sudoers_file}\"
+'"
+
+  # Validate sudoers if visudo exists
+  if command -v visudo >/dev/null 2>&1; then
+    if ! sudo visudo -cf "$sudoers_file" >/dev/null; then
+      log "ERROR: sudoers validation failed for '$sudoers_file' (rolling back)"
+      run "sudo rm -f '$sudoers_file'"
+      return 1
+    fi
+  else
+    log "WARN: 'visudo' not found; skipped sudoers validation"
+  fi
+
+  log "VT switching enabled: members of '$group' can run 'sudo $chvt_bin <N>' without a password"
+}

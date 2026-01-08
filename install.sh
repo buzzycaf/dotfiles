@@ -232,6 +232,7 @@ main() {
   # Core system install
   core_install_packages
   core_install_yay
+  core_enable_vt_switching
 
   # Optional GUI install
   if [[ "$INCLUDE_GUI" == "1" ]]; then
