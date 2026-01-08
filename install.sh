@@ -39,7 +39,7 @@ run() {
   if [[ "$DRY_RUN" == "1" ]]; then
     echo "[dry-run] $*"
   else
-    eval "$@"
+    eval -- "$@"
   fi
 }
 
@@ -118,6 +118,11 @@ link_dotfiles() {
   local target_user="${SUDO_USER:-$USER}"
   local target_home
   target_home="$(getent passwd "$target_user" | cut -d: -f6)"
+
+  if [[ -z "$target_home" ]]; then
+    echo "ERROR: could not resolve home directory for user '$target_user'" >&2
+    exit 1
+  fi
 
   # zsh
   [[ -f "$REPO_DIR/zsh/zshrc" ]]     && link_file "$REPO_DIR/zsh/zshrc" "$target_home/.zshrc"
@@ -256,7 +261,7 @@ main() {
   # Core system install
   core_install_packages
   core_install_yay
-  core_enable_vt_switching
+  core_enable_vt_switching "$USER"
 
   # Optional GUI install
   if [[ "$INCLUDE_GUI" == "1" ]]; then
