@@ -166,7 +166,7 @@ show_milliseconds = true
 disabled = false
 show_notifications = false
 min_time = 250
-format = ' [ $duration](fg:crust bg:lavender)'
+format = '[  $duration](fg:crust bg:lavender)'
 
 [palettes.catppuccin_mocha]
 rosewater = "#f5e0dc"
