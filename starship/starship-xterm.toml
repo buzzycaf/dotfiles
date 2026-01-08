@@ -25,9 +25,7 @@ $python\
 $docker_context\
 $conda\
 [](fg:sapphire bg:lavender)\
-$time\
 [](fg:lavender)\
-$cmd_duration\
 $line_break\
 $character
 """
@@ -35,7 +33,8 @@ $character
 right_format = """
 $username\
 $hostname\
-$cmd_duration
+$cmd_duration\
+$time
 """
 
 [hostname]
