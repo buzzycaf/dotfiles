@@ -30,4 +30,6 @@ alias tl='tmux ls'
 alias tn='tmux new -s'
 
 # View image
-alias img='setsid swayimg >/dev/null 2>&1 &'
+img() {
+  setsid swayimg "$@" >/dev/null 2>&1 &
+}
