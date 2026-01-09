@@ -61,11 +61,10 @@ gui_enable_services() {
   log "Enabling user audio services (WirePlumber)..."
   run "systemctl --user enable --now wireplumber.service || true"
 
-  log "Enabling user XDG Desktop Portal services..."
-  run "systemctl --user enable --now xdg-desktop-portal.service || true"
-  run "systemctl --user enable --now xdg-desktop-portal-hyprland.service || true"
-
-  # xdg-desktop-portal-gtk is DBus/socket activated; no service enable needed.
+  log "Starting user XDG Desktop Portal services (best effort)..."
+  run "systemctl --user daemon-reload >/dev/null 2>&1 || true"
+  run "systemctl --user restart xdg-desktop-portal.service >/dev/null 2>&1 || true"
+  run "systemctl --user restart xdg-desktop-portal-hyprland.service >/dev/null 2>&1 || true"
 }
 
 gui_install_post_login_fixes() {
@@ -84,9 +83,6 @@ STAMP="$HOME/.local/state/archbento/portal-fixed"
 [[ -f "$STAMP" ]] && exit 0
 
 mkdir -p "$(dirname "$STAMP")"
-
-systemctl --user enable xdg-desktop-portal.service >/dev/null 2>&1 || true
-systemctl --user enable xdg-desktop-portal-hyprland.service >/dev/null 2>&1 || true
 
 systemctl --user restart xdg-desktop-portal.service >/dev/null 2>&1 || true
 systemctl --user restart xdg-desktop-portal-hyprland.service >/dev/null 2>&1 || true
