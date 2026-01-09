@@ -76,14 +76,14 @@ gui_install_post_login_fixes() {
   run "mkdir -p '$HOME/.local/bin' '$HOME/.local/state/archbento' '$HOME/.config/systemd/user' '$HOME/.config/hypr'"
 
   # 1) Script: one-time portal enable/restart with a stamp file
-  run "cat > '$HOME/.local/bin/archbento-portal-fix.sh' << 'EOF'
+run "cat > '$HOME/.local/bin/archbento-portal-fix.sh' << 'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
 
 STAMP=\"$HOME/.local/state/archbento/portal-fixed\"
 [[ -f \"$STAMP\" ]] && exit 0
 
-mkdir -p \"\$(dirname \"\$STAMP\")\"
+mkdir -p \"$(dirname \"$STAMP\")\"
 
 systemctl --user enable xdg-desktop-portal.service >/dev/null 2>&1 || true
 systemctl --user enable xdg-desktop-portal-hyprland.service >/dev/null 2>&1 || true
