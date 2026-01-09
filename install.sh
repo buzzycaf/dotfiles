@@ -43,6 +43,21 @@ run() {
   fi
 }
 
+# Writes to a file
+write_file() {
+  local path="$1"
+
+  if [[ "$DRY_RUN" == "1" ]]; then
+    printf '[dry-run] write %s\n' "$path"
+    # consume stdin so callers can still use heredocs
+    cat >/dev/null
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$path")"
+  cat > "$path"
+}
+
 # Ensure required commands exist
 need_cmd() {
   command -v "$1" >/dev/null 2>&1 || {
