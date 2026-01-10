@@ -125,6 +125,7 @@ dotfiles_link_all() {
   fi
 
   # Fuzzel config
+  log "Ensuring fuzzel launcher configuration is present"
   run "mkdir -p '$target_home/.config/fuzzel'"
   [[ ! -e "$target_home/.config/fuzzel/fuzzel.ini" ]] && \
     run "ln -s '$REPO_DIR/fuzzel/fuzzel.ini' '$target_home/.config/fuzzel/fuzzel.ini'"
