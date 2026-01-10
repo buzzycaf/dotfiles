@@ -7,20 +7,30 @@ DEFAULT_PATH="$DIR/$DEFAULT_NAME"
 
 mkdir -p "$DIR"
 
-# Save dialog (prefilled path + name)
+# 1) Area select first (exit cleanly if cancelled)
+GEOM="$(slurp)" || exit 0
+
+# 2) Capture to a temp file first
+TMP="$(mktemp --suffix=.png)"
+cleanup() { rm -f "$TMP"; }
+trap cleanup EXIT
+
+grim -g "$GEOM" "$TMP"
+
+# 3) Copy to clipboard immediately
+wl-copy < "$TMP"
+
+# 4) Notify immediately
+notify-send "Screenshot" "Captured to clipboard — choose where to save"
+
+# 5) Save dialog (prefilled)
 FILE="$(zenity --file-selection \
   --save \
   --confirm-overwrite \
   --filename="$DEFAULT_PATH")" || exit 0
 
-# Select area (exit cleanly if cancelled)
-GEOM="$(slurp)" || exit 0
+# 6) Persist to chosen location
+mv -f "$TMP" "$FILE"
+trap - EXIT  # file is no longer temp-managed
 
-# Take screenshot
-grim -g "$GEOM" "$FILE"
-
-# Copy to clipboard
-wl-copy < "$FILE"
-
-# Notify user
 notify-send "Screenshot" "Saved and copied to clipboard"
