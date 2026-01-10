@@ -24,7 +24,7 @@ wl-copy < "$TMP"
 notify-send "Screenshot" "Captured to clipboard — choose where to save"
 
 # 5) Save dialog (prefilled)
-FILE="$(zenity --file-selection \
+FILE="$(env GTK_USE_PORTAL=0 zenity --file-selection \
   --save \
   --confirm-overwrite \
   --filename="$DEFAULT_PATH")" || exit 0
