@@ -98,6 +98,31 @@ dotfiles_link_all() {
   run "mkdir -p '$target_home/.config/gtk-4.0'"
   [[ -f "$REPO_DIR/dark-theme/gtk-4.0/settings.ini" ]] && \
     link_file "$REPO_DIR/dark-theme/gtk-4.0/settings.ini" "$target_home/.config/gtk-4.0/settings.ini"
+
+  # QT dark preference (copy once; user-editable)
+  run "mkdir -p '$target_home/.config/qt6ct'"
+  run "mkdir -p '$target_home/.config/qt6ct/colors'"
+  run "mkdir -p '$target_home/.config/qt6ct/qss'"
+  
+  # qt6ct main config
+  if [[ -f "$REPO_DIR/dark-theme/qt/qt6ct.conf" ]]; then
+    if [[ ! -e "$target_home/.config/qt6ct/qt6ct.conf" ]]; then
+      log "Copying qt6ct config (user-editable)"
+      run "cp '$REPO_DIR/dark-theme/qt/qt6ct.conf' '$target_home/.config/qt6ct/qt6ct.conf'"
+    else
+      log "OK: qt6ct config already exists (not overwriting)"
+    fi
+  fi
+  
+  # qt6ct color scheme
+  if [[ -f "$REPO_DIR/dark-theme/qt/colors/darker.conf" ]]; then
+    if [[ ! -e "$target_home/.config/qt6ct/colors/darker.conf" ]]; then
+      log "Copying qt6ct color scheme (user-editable)"
+      run "cp '$REPO_DIR/dark-theme/qt/colors/darker.conf' '$target_home/.config/qt6ct/colors/darker.conf'"
+    else
+      log "OK: qt6ct color scheme already exists (not overwriting)"
+    fi
+  fi
   
   # Save Backups
   [[ -d "$BACKUP_DIR" ]] && log "Backups saved in: $BACKUP_DIR"
