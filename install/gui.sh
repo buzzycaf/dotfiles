@@ -48,7 +48,6 @@ gui_install_tools() {
     thunar
     thunar-archive-plugin
     gvfs
-    gvfs-sftp
     gvfs-smb
     gvfs-mtp
     gvfs-afc
