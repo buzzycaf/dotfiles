@@ -50,6 +50,7 @@ gui_install_tools() {
     # File manager
     thunar
     thunar-archive-plugin
+    tumbler
     gvfs
     gvfs-smb
     gvfs-mtp
