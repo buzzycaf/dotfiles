@@ -133,7 +133,19 @@ dotfiles_link_all() {
   if [[ -f "$REPO_DIR/mako/config" ]]; then
     link_file "$REPO_DIR/mako/config" "$target_home/.config/mako/config"
   fi
-  
+
+  # screenshot helper
+  if [[ -f "$REPO_DIR/bin/screenshot.sh" ]]; then
+    if [[ ! -f "$target_home/.local/bin/screenshot.sh" ]]; then
+      log "Installing screenshot helper script"
+      run "mkdir -p '$target_home/.local/bin'"
+      run "cp '$REPO_DIR/bin/screenshot.sh' '$target_home/.local/bin/screenshot.sh'"
+      run "chmod +x '$target_home/.local/bin/screenshot.sh'"
+    else
+      log "Screenshot helper script already exists, skipping"
+    fi
+  fi
+      
   # Save Backups
   [[ -d "$BACKUP_DIR" ]] && log "Backups saved in: $BACKUP_DIR"
 }
