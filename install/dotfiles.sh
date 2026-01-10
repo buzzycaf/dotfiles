@@ -128,6 +128,11 @@ dotfiles_link_all() {
   if [[ -f "$REPO_DIR/fuzzel/fuzzel.ini" ]]; then
     link_file "$REPO_DIR/fuzzel/fuzzel.ini" "$target_home/.config/fuzzel/fuzzel.ini"
   fi
+
+  # mako notifications
+  if [[ -f "$REPO_DIR/mako/config" ]]; then
+    link_file "$REPO_DIR/mako/config" "$target_home/.config/mako/config"
+  fi
   
   # Save Backups
   [[ -d "$BACKUP_DIR" ]] && log "Backups saved in: $BACKUP_DIR"
