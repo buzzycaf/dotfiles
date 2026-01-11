@@ -138,7 +138,39 @@ dotfiles_link_all() {
       log "Screenshot helper script already exists, skipping"
     fi
   fi
-      
+
+  # =====================================================================
+  # Archbento Tools Framework
+  # 1) Create state directory
+  # 2) Copy tools.env into state (copy once; user-editable)
+  # 3) Link archbento-tools-sync.sh into ~/.local/bin
+  # =====================================================================
+
+  # 1) state directory
+  run "mkdir -p '$target_home/.local/state/archbento'"
+
+  # 2) tools.env (copy once; user-editable)
+  if [[ -f "$REPO_DIR/tools.env" ]]; then
+    local state_tools_env="$target_home/.local/state/archbento/tools.env"
+    if [[ ! -e "$state_tools_env" ]]; then
+      log "Copying tools.env (user-editable): $state_tools_env"
+      run "cp '$REPO_DIR/tools.env' '$state_tools_env'"
+    else
+      log "OK: tools.env already exists (not overwriting): $state_tools_env"
+    fi
+  else
+    log "WARNING: tools.env not found in repo root: $REPO_DIR/tools.env"
+  fi
+
+  # 3) archbento-tools-sync.sh (symlink into ~/.local/bin)
+  run "mkdir -p '$target_home/.local/bin'"
+  if [[ -f "$REPO_DIR/bin/archbento-tools-sync.sh" ]]; then
+    log "Linking archbento-tools-sync.sh into ~/.local/bin"
+    run "ln -sf '$REPO_DIR/bin/archbento-tools-sync.sh' '$target_home/.local/bin/archbento-tools-sync.sh'"
+  else
+    log "WARNING: archbento-tools-sync.sh not found: $REPO_DIR/bin/archbento-tools-sync.sh"
+  fi
+
   # Save Backups
   [[ -d "$BACKUP_DIR" ]] && log "Backups saved in: $BACKUP_DIR"
 }
