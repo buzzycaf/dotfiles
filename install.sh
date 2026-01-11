@@ -23,6 +23,7 @@ NO_PACKAGES=0
 DRY_RUN=0
 INCLUDE_GUI=0
 INCLUDE_GUI_TOOLS=${INCLUDE_GUI_TOOLS:-1}
+UPDATE_TOOLS=0
 
 # -----------------------------
 # Helper functions
@@ -125,6 +126,7 @@ Options:
   --dry-run        Print actions without making any changes
   -h, --help       Show this help message
   --gui            Install Hyprland GUI stack (desktop packages)
+  --update-tools   Regenerate tool outputs (tools.conf, environment.d, zsh exports) from ~/.local/state/archbento/tools.env and exit
 
 Environment variables:
   DOTFILES_SET_SHELL=1
@@ -135,6 +137,7 @@ Examples:
   ./install.sh --dry-run
   ./install.sh --no-packages
   DOTFILES_SET_SHELL=1 ./install.sh
+  ./install.sh --update-tools
 EOF
 }
 
@@ -143,6 +146,7 @@ parse_args() {
     case "$arg" in
       --no-packages) NO_PACKAGES=1 ;;
       --dry-run)     DRY_RUN=1 ;;
+      --update-tools) UPDATE_TOOLS=1 ;;
       --gui)
         INCLUDE_GUI=1
         ;;
@@ -181,6 +185,19 @@ main() {
   source_module "dotfiles.sh"
   source_module "gui.sh"
 
+  # Tools-only update (regenerate outputs and exit)
+  if [[ "$UPDATE_TOOLS" == "1" ]]; then
+    local sync="$HOME/.local/bin/archbento-tools-sync.sh"
+    if [[ ! -x "$sync" ]]; then
+      echo "ERROR: missing sync script: $sync" >&2
+      echo "Hint: run ./install.sh once first to install dotfiles and tools.env" >&2
+      exit 1
+    fi
+    run "$sync"
+    log "Done."
+    exit 0
+  fi
+
   if [[ "$NO_PACKAGES" != "1" ]]; then
     warm_sudo
   fi
@@ -209,6 +226,8 @@ main() {
   fi
 
   dotfiles_link_all
+  # Generate tool outputs (Hyprland vars, systemd env, zsh exports)
+  run "$HOME/.local/bin/archbento-tools-sync.sh"
   set_zsh_shell
 
   log "Done."
