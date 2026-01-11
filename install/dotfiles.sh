@@ -172,5 +172,6 @@ dotfiles_link_all() {
   fi
 
   # Save Backups
-  [[ -d "$BACKUP_DIR" ]] && log "Backups saved in: $BACKUP_DIR"
+  [[ -n "${BACKUP_DIR:-}" ]] && log "Backups saved in: $BACKUP_DIR"
+  
 }
